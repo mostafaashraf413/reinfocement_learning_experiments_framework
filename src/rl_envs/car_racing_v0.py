@@ -6,11 +6,11 @@ Created on Sat Mar 21 13:38:45 2020
 @author: mostafa
 """
 
-from game_env_interface import GameEnvInterface
+from rl_env_interface import RLEnvInterface
 import gym
 from gym import wrappers
 
-class CarRacing(GameEnvInterface):
+class CarRacing(RLEnvInterface):
     
     def __init__(self):
         super().__init__('car_racing_v0')
@@ -35,7 +35,7 @@ class CarRacing(GameEnvInterface):
     
 
     def action_space(self):
-        return self.env.action_space    
+        return self.env.action_space.n    
     
 
     def get_random_action(self):

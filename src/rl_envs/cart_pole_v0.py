@@ -7,11 +7,11 @@ Created on Sat Mar 21 09:32:15 2020
 """
 
 
-from game_env_interface import GameEnvInterface
+from rl_env_interface import RLEnvInterface
 import gym
 from gym import wrappers
 
-class CartPole(GameEnvInterface):
+class CartPole(RLEnvInterface):
     
     def __init__(self):
         super().__init__('cart_pole_v0')
@@ -36,7 +36,7 @@ class CartPole(GameEnvInterface):
     
 
     def action_space(self):
-        return self.env.action_space    
+        return self.env.action_space.n   
     
 
     def get_random_action(self):

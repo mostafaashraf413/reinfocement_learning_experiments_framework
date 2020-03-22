@@ -9,7 +9,7 @@ Created on Tue Mar 17 12:31:52 2020
 
 from abc import ABC, abstractmethod
 
-class GameEnvInterface(ABC):
+class RLEnvInterface(ABC):
 
     def __init__(self, name):
         self.name = name
