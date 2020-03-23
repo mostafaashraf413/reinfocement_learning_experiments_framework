@@ -1,5 +1,5 @@
 {
-    "episodes" : 5,
+    "episodes" : 10,
     "load_saved_models" : false,
     "env_name" : ["car_racing_v0", "CarRacing"],
     "rl_models" : [["random_model", "RandomModel"]]

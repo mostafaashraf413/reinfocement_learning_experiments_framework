@@ -36,7 +36,7 @@ class CartPole(RLEnvInterface):
     
 
     def action_space(self):
-        return self.env.action_space.n   
+        return self.env.action_space  
     
 
     def get_random_action(self):

@@ -17,11 +17,13 @@ class RandomModel(RLModelInterface):
         
         
     def get_action(self, state):
-        random.random.randint(0, self.action_space-1)
+#        return random.randint(0, self.action_space-1)
+        return self.action_space.sample()
     
 
     def add_feedback_sample(self, state1, action, reward, state2):
-        print('%s has received a feedback!'%(self.model_name))
+#        print('%s has received a feedback!'%(self.model_name))
+        pass
     
     
     def save(self):

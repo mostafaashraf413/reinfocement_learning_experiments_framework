@@ -8,7 +8,6 @@ Created on Sat Mar 21 13:38:45 2020
 
 from rl_env_interface import RLEnvInterface
 import gym
-from gym import wrappers
 
 class CarRacing(RLEnvInterface):
     
@@ -35,7 +34,7 @@ class CarRacing(RLEnvInterface):
     
 
     def action_space(self):
-        return self.env.action_space.n    
+        return self.env.action_space   
     
 
     def get_random_action(self):
