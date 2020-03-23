@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Mar 21 13:38:45 2020
+Created on Mon Mar 23 21:17:27 2020
 
 @author: mostafa
 """
 
 from rl_env_interface import RLEnvInterface
-import gym
+import gym_super_mario_bros as gym
 
-class CarRacing(RLEnvInterface):
+class SuperMario(RLEnvInterface):
     
     def __init__(self):
-        super().__init__('car_racing_v0')
-        self.env = gym.make('CarRacing-v0') 
-#        self.env = wrappers.Monitor(self.env, None, video_callable=False ,force=True)
+        super().__init__('super_mario_basic_v0')
+        self.env = gym.make('SuperMarioBros-v0') 
 
     def new_episode(self):
         self.env.reset()
@@ -47,14 +46,15 @@ class CarRacing(RLEnvInterface):
     
 if __name__ == '__main__':
     import time
-    car = CarRacing()
+    mario = SuperMario()
     
     for i in range(10000):
-        car.new_episode()    
+        mario.new_episode()    
         done = True
         while(done):
-            reward, done = car.step(car.get_random_action())
-            car.render()
+            reward, done = mario.step(mario.get_random_action())
+            mario.render()
             time.sleep(1)
+            print(done)
         
-    car.close_env()
+    mario.close_env()

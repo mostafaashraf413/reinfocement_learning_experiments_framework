@@ -1,6 +1,6 @@
 {
     "episodes" : 10,
     "load_saved_models" : false,
-    "env_name" : ["car_racing_v0", "CarRacing"],
+    "env_name" : ["super_mario_bros_v0", "SuperMario"],
     "rl_models" : [["random_model", "RandomModel"]]
 }

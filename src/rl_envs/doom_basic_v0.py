@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Mar 21 13:38:45 2020
+Created on Mon Mar 23 20:44:32 2020
 
 @author: mostafa
 """
 
 from rl_env_interface import RLEnvInterface
 import gym
+import gym_pull
 
-class CarRacing(RLEnvInterface):
+class DoomBasic(RLEnvInterface):
     
     def __init__(self):
-        super().__init__('car_racing_v0')
-        self.env = gym.make('CarRacing-v0') 
-#        self.env = wrappers.Monitor(self.env, None, video_callable=False ,force=True)
+        super().__init__('doom_basic_v0')
+        gym_pull.pull('github.com/ppaquette/gym-doom')
+        self.env = gym.make('ppaquette/DoomCorridor-v0') 
 
     def new_episode(self):
         self.env.reset()
@@ -26,7 +27,7 @@ class CarRacing(RLEnvInterface):
     
     
     def render(self):
-        return self.env.render()
+        return self.env.render(mode='rgb_array')
     
     
     def close_env(self):
@@ -47,14 +48,14 @@ class CarRacing(RLEnvInterface):
     
 if __name__ == '__main__':
     import time
-    car = CarRacing()
+    doom = DoomBasic()
     
     for i in range(10000):
-        car.new_episode()    
+        doom.new_episode()    
         done = True
         while(done):
-            reward, done = car.step(car.get_random_action())
-            car.render()
+            reward, done = doom.step(doom.get_random_action())
+            doom.render()
             time.sleep(1)
         
-    car.close_env()
+    doom.close_env()

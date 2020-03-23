@@ -28,7 +28,7 @@ class GameManager():
         rl_models_names = self.config.get('rl_models')
         self.rl_models = []
         for i in rl_models_names:
-            exec('from rl_models.%s.%s import %s '%(i[0], i[0], i[1]))
+            exec('from rl_models.%s import %s '%(i[0], i[1]))
             rl_model: RLModelInterface = eval(i[1])(self.env.action_space(), self.env.get_reward_range())
             
             if self.config.get('load_saved_models'):
