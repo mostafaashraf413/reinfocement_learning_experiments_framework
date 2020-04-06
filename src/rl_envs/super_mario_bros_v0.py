@@ -9,6 +9,7 @@ Created on Mon Mar 23 21:17:27 2020
 from rl_env_interface import RLEnvInterface
 import gym_super_mario_bros as gym
 
+# URL: https://pypi.org/project/gym-super-mario-bros/
 class SuperMario(RLEnvInterface):
     
     def __init__(self):
@@ -37,7 +38,8 @@ class SuperMario(RLEnvInterface):
     
 
     def get_random_action(self):
-        return self.env.action_space.sample() 
+        action = self.env.action_space.sample() 
+        return action
     
     
     def get_reward_range(self):

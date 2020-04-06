@@ -7,15 +7,18 @@ Created on Tue Mar 17 12:33:39 2020
 """
 
 from utils.config_manager import ConfigManager
+from utils.image_preprocessing import ImagePreprocessing
 from rl_env_interface import RLEnvInterface
 from rl_model_interface import RLModelInterface
+
 
 class GameManager():
     
     def __init__(self, config_file = 'game_config.json'):
         self.config = ConfigManager(config_file)
-        self.get_env()
-        self.get_rl_models()
+        self.get_env()        
+        self.img_preprocess = ImagePreprocessing(image_size = (self.config.get('state_image_height'), self.config.get('state_image_width')))        
+        self.get_rl_models(self.config.get('state_image_height'), self.config.get('state_image_width'))
         
         
     def get_env(self):
@@ -24,12 +27,13 @@ class GameManager():
         self.env : RLEnvInterface = eval(env_name[1])()
     
     
-    def get_rl_models(self):
+    def get_rl_models(self, state_height, state_width):
         rl_models_names = self.config.get('rl_models')
         self.rl_models = []
         for i in rl_models_names:
             exec('from rl_models.%s import %s '%(i[0], i[1]))
-            rl_model: RLModelInterface = eval(i[1])(self.env.action_space(), self.env.get_reward_range())
+            rl_model: RLModelInterface = eval(i[1])(self.env.action_space(), self.env.get_reward_range(), 
+                                                    state_height = state_height, state_width = state_width)
             
             if self.config.get('load_saved_models'):
                 rl_model.load()
@@ -51,10 +55,10 @@ class GameManager():
                 total_rewards = 0
                 
                 while not done:
-                    current_state = self.env.render()
+                    current_state = self.img_preprocess.preprocess_screen(self.env.render())
                     action = rl_model.get_action(current_state)
                     reward, done = self.env.step(action)
-                    next_state = self.env.render()
+                    next_state = self.img_preprocess.preprocess_screen(self.env.render())
                     rl_model.add_feedback_sample(current_state, action, reward, next_state)
                     total_rewards += reward
                 print('%s , episode %d, total rewards = %f'%(rl_model.model_name, episode, total_rewards))

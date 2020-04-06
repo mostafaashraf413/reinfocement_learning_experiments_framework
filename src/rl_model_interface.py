@@ -10,10 +10,12 @@ from abc import ABC, abstractmethod
 
 class RLModelInterface(ABC):
     
-    def __init__(self, model_name, action_space, reward_range):
+    def __init__(self, model_name, action_space, reward_range, state_height, state_width):
         self.model_name = model_name
         self.action_space = action_space
         self.reward_range = reward_range
+        self.state_height = state_height
+        self.state_width = state_width 
         
     
     @abstractmethod

@@ -9,7 +9,6 @@ Created on Sat Mar 21 09:32:15 2020
 
 from rl_env_interface import RLEnvInterface
 import gym
-from gym import wrappers
 
 class CartPole(RLEnvInterface):
     

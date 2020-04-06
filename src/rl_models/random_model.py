@@ -12,8 +12,8 @@ import random
 
 class RandomModel(RLModelInterface):
     
-    def __init__(self, action_space, reward_range):
-        super().__init__('random_model', action_space, reward_range)
+    def __init__(self, action_space, reward_range, state_width, state_height):
+        super().__init__('random_model', action_space, reward_range, state_width, state_height)
         
         
     def get_action(self, state):
