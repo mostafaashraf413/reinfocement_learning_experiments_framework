@@ -19,7 +19,7 @@ import copy
 
 class DQNModule(nn.Module):
 
-    def __init__(self, h, w):
+    def __init__(self, h, w, output_size):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 16, kernel_size=5, stride=2)
         self.bn1 = nn.BatchNorm2d(16)
@@ -35,7 +35,7 @@ class DQNModule(nn.Module):
         convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w)))
         convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h)))
         linear_input_size = convw * convh * 32
-        self.head = nn.Linear(linear_input_size, 2) # 448 or 512
+        self.head = nn.Linear(linear_input_size, output_size) # 448 or 512
 
     # Called with either one element to determine next action, or a batch
     # during optimization. Returns tensor([[left0exp,right0exp]...]).
@@ -53,9 +53,9 @@ class DQNModule(nn.Module):
 class DQN(RLModelInterface):
     
     def __init__(self, action_space, reward_range, state_height, state_width):
-        super().__init__('dqn_model', action_space, reward_range, state_height, state_width)
+        super().__init__('dqn_model_discrete', action_space, reward_range, state_height, state_width)
         
-        self.dqn_module = DQNModule(self.state_height, self.state_width, )
+        self.dqn_module = DQNModule(self.state_height, self.state_width, action_space.n)
         self.dqn_module_target = copy.deepcopy(self.dqn_module)
         
         

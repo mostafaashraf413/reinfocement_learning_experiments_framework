@@ -57,6 +57,7 @@ class GameManager():
                 while not done:
                     current_state = self.img_preprocess.preprocess_screen(self.env.render())
                     action = rl_model.get_action(current_state)
+                    print('action = %s'%(str(action)))
                     reward, done = self.env.step(action)
                     next_state = self.img_preprocess.preprocess_screen(self.env.render())
                     rl_model.add_feedback_sample(current_state, action, reward, next_state)

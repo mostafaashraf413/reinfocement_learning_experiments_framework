@@ -7,6 +7,7 @@ Created on Tue Mar 17 12:32:37 2020
 """
 
 from abc import ABC, abstractmethod
+from utils.config_manager import ConfigManager
 
 class RLModelInterface(ABC):
     
@@ -16,6 +17,8 @@ class RLModelInterface(ABC):
         self.reward_range = reward_range
         self.state_height = state_height
         self.state_width = state_width 
+        
+        self.model_config = ConfigManager('models_config.json').get(self.model_name)
         
     
     @abstractmethod
