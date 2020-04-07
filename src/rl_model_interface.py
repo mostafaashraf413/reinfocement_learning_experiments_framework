@@ -27,18 +27,23 @@ class RLModelInterface(ABC):
     
     
     @abstractmethod
-    def add_feedback_sample(self, state1, action, reward, state2):
+    def add_feedback_sample(self, state1, action, reward, state2, done):
         pass
     
     
     @abstractmethod
-    def save(self):
+    def save(self, file_name):
         pass
     
     
     @abstractmethod
-    def load(self):
-        pass    
+    def load(self, file_name):
+        pass 
+    
+    @abstractmethod
+    def get_analysis_dataframe(self):
+        pass
+    
     
     def __str__(self):
         return self.model_name

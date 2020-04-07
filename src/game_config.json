@@ -1,8 +1,8 @@
 {
-    "episodes" : 10,
-    "load_saved_models" : false,
+    "episodes" : 10000,
+    "load_saved_models" : true,
     "state_image_width" : 40,
     "state_image_height" : 40,
-    "env_name" : ["super_mario_bros_v0", "SuperMario"],
+    "env_name" : ["cart_pole_v0", "CartPole"],
     "rl_models" : [["dqn_discrete", "DQN"], ["random_model", "RandomModel"]]
 }

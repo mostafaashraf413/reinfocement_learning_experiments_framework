@@ -35,9 +35,6 @@ class GameManager():
             rl_model: RLModelInterface = eval(i[1])(self.env.action_space(), self.env.get_reward_range(), 
                                                     state_height = state_height, state_width = state_width)
             
-            if self.config.get('load_saved_models'):
-                rl_model.load()
-            
             self.rl_models.append(rl_model)
             
     
@@ -46,6 +43,13 @@ class GameManager():
         print('rl models : ', self.rl_models)
         
         for rl_model in self.rl_models:
+            
+            model_file_name = '../models/'+rl_model.model_name+'__'+self.env.name+'.model'
+            
+            if self.config.get('load_saved_models'):
+                rl_model.load(model_file_name)
+                print('%s has been loaded'%(rl_model.model_name))
+            
             print('%s training has been started!'%(rl_model.model_name))
             
             for episode in range(self.config.get('episodes')):
@@ -57,13 +61,18 @@ class GameManager():
                 while not done:
                     current_state = self.img_preprocess.preprocess_screen(self.env.render())
                     action = rl_model.get_action(current_state)
-                    print('action = %s'%(str(action)))
                     reward, done = self.env.step(action)
                     next_state = self.img_preprocess.preprocess_screen(self.env.render())
-                    rl_model.add_feedback_sample(current_state, action, reward, next_state)
+                    rl_model.add_feedback_sample(current_state, action, reward, next_state, done)
                     total_rewards += reward
                 print('%s , episode %d, total rewards = %f'%(rl_model.model_name, episode, total_rewards))
-                    
+                
+                # save model:
+                rl_model.save(model_file_name)
+                print('%s has been saved'%(rl_model.model_name))
+                
+            # TODO: collect models analysis
+                
             print('%s training has been finished!'%(rl_model.model_name))
             print('########################################################')
         self.env.close_env()
