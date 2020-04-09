@@ -72,8 +72,10 @@ class DQNModule(nn.Module):
         convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h, self.conv1.kernel_size[0], self.conv1.stride[0]), self.conv2.kernel_size[0], self.conv2.stride[0]), self.conv3.kernel_size[0], self.conv3.stride[0])
        
         linear_input_size = convw * convh * 32
-        self.hidden1 = nn.Linear(linear_input_size, 256)
-        self.head = nn.Linear(256, output_size) 
+        self.hidden1 = nn.Linear(linear_input_size, 512)
+        self.hidden2 = nn.Linear(512, 256)
+        self.hidden3 = nn.Linear(256, 64)
+        self.head = nn.Linear(64, output_size) 
 
     # Called with either one element to determine next action, or a batch
     # during optimization. Returns tensor([[left0exp,right0exp]...]).
@@ -82,6 +84,8 @@ class DQNModule(nn.Module):
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
         x = F.relu(self.hidden1(x.view(x.size(0), -1)))
+        x = F.relu(self.hidden2(x))
+        x = F.relu(self.hidden3(x))
         return self.head(x)
     
     
@@ -162,7 +166,7 @@ class DQN(RLModelInterface):
                 self.dqn_module_target.load_state_dict(self.dqn_module.state_dict())
                 self.sync_counter = 1
                 # just for debug:
-                self.visualize_training_performance()
+                # self.visualize_training_performance()
             self.sync_counter += 1
 
         
