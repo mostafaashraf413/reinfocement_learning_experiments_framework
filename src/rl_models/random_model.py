@@ -31,5 +31,5 @@ class RandomModel(RLModelInterface):
     def load(self, file_name):
         pass   
     
-    def get_analysis_dataframe(self):
-        return None
+    def visualize_training_performance(self):
+        pass

@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Mar 21 09:32:15 2020
+Created on Wed Apr  8 20:49:24 2020
 
 @author: mostafa
 """
 
-
 from rl_env_interface import RLEnvInterface
 import gym
 
-class CartPole(RLEnvInterface):
+class Pong(RLEnvInterface):
     
     def __init__(self):
-        super().__init__('cart_pole_v0')
-        self.env = gym.make('CartPole-v0').unwrapped
+        super().__init__('pong_v0')
+        self.env = gym.make('Pong-v0')
+        self.current_observation = self.env.observation_space.sample()
+        
 
     def new_episode(self):
         self.env.reset()
@@ -22,11 +23,13 @@ class CartPole(RLEnvInterface):
     
     def step(self, action):
         observation, reward, done, info = self.env.step(action)
+        self.current_observation = observation
         return reward, done
     
     
     def render(self):
-        return self.env.render(mode='rgb_array')
+        self.env.render(mode = 'human') #(mode = 'rgb_array')
+        return self.current_observation
     
     
     def close_env(self):
@@ -46,14 +49,22 @@ class CartPole(RLEnvInterface):
     
     
 if __name__ == '__main__':
-    cart = CartPole()
+    import matplotlib.pyplot as plt
+    
+    pong = Pong()
+    print(pong.action_space())
     
     for i in range(10000):
-        cart.new_episode()    
+        pong.new_episode()    
         done = False
-        while(not done):
-            reward, done = cart.step(cart.get_random_action())
-            cart.render()
-            print(cart.env.state)
         
-    cart.close_env()
+        while(not done):
+            action = pong.get_random_action()
+            reward, done = pong.step(action)
+            print(reward, ' ', action, ' ', done)
+            
+            pong.render()
+            # plt.imshow(pong.render())
+            # plt.show()
+        
+    pong.close_env()

@@ -20,36 +20,69 @@ import copy
 from collections import deque
 import math
 import random
+from utils.image_preprocessing import display
+from utils.visualization import plot_line_chart
 
+
+
+
+# class DQNModule(nn.Module):
+
+#     def __init__(self, h, w, output_size):
+#         super().__init__()
+#         self.conv1 = nn.Conv2d(3, 16, kernel_size=5, stride=2)
+#         self.bn1 = nn.BatchNorm2d(16)
+#         self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=2)
+#         self.bn2 = nn.BatchNorm2d(32)
+#         self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
+#         self.bn3 = nn.BatchNorm2d(32)
+
+#         # Number of Linear input connections depends on output of conv2d layers
+#         # and therefore the input image size, so compute it.
+#         def conv2d_size_out(size, kernel_size = 5, stride = 2):
+#             return (size - (kernel_size - 1) - 1) // stride  + 1
+#         convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w)))
+#         convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h)))
+#         linear_input_size = convw * convh * 32
+#         self.head = nn.Linear(linear_input_size, output_size) # 448 or 512
+
+#     # Called with either one element to determine next action, or a batch
+#     # during optimization. Returns tensor([[left0exp,right0exp]...]).
+#     def forward(self, x):
+#         x = F.relu(self.bn1(self.conv1(x)))
+#         x = F.relu(self.bn2(self.conv2(x)))
+#         x = F.relu(self.bn3(self.conv3(x)))
+#         return self.head(x.view(x.size(0), -1))
 
 
 class DQNModule(nn.Module):
 
     def __init__(self, h, w, output_size):
         super().__init__()
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=5, stride=2)
-        self.bn1 = nn.BatchNorm2d(16)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=2)
-        self.bn2 = nn.BatchNorm2d(32)
-        self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
-        self.bn3 = nn.BatchNorm2d(32)
+        self.conv1 = nn.Conv2d(3, 16, kernel_size=8, stride=4)
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=4, stride=2)
+        self.conv3 = nn.Conv2d(32, 32, kernel_size=4, stride=2)
 
         # Number of Linear input connections depends on output of conv2d layers
         # and therefore the input image size, so compute it.
         def conv2d_size_out(size, kernel_size = 5, stride = 2):
             return (size - (kernel_size - 1) - 1) // stride  + 1
-        convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w)))
-        convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h)))
+        
+        convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w, self.conv1.kernel_size[0], self.conv1.stride[0]), self.conv2.kernel_size[0], self.conv2.stride[0]), self.conv3.kernel_size[0], self.conv3.stride[0])
+        convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h, self.conv1.kernel_size[0], self.conv1.stride[0]), self.conv2.kernel_size[0], self.conv2.stride[0]), self.conv3.kernel_size[0], self.conv3.stride[0])
+       
         linear_input_size = convw * convh * 32
-        self.head = nn.Linear(linear_input_size, output_size) # 448 or 512
+        self.hidden1 = nn.Linear(linear_input_size, 256)
+        self.head = nn.Linear(256, output_size) 
 
     # Called with either one element to determine next action, or a batch
     # during optimization. Returns tensor([[left0exp,right0exp]...]).
     def forward(self, x):
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = F.relu(self.bn2(self.conv2(x)))
-        x = F.relu(self.bn3(self.conv3(x)))
-        return self.head(x.view(x.size(0), -1))
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = F.relu(self.conv3(x))
+        x = F.relu(self.hidden1(x.view(x.size(0), -1)))
+        return self.head(x)
     
     
     
@@ -67,6 +100,7 @@ class DQN(RLModelInterface):
         self.dqn_module = DQNModule(self.state_height, self.state_width, self.action_space.n).to(self.device)
         self.dqn_module_target = copy.deepcopy(self.dqn_module).to(self.device)
         self.__initialize_model_params()
+        self.analysis_dic = {'losses':[]}
         
         
     def __initialize_model_params(self):
@@ -81,8 +115,8 @@ class DQN(RLModelInterface):
         self.steps_done = 0
         
         self.replay = deque(maxlen= self.mem_size)        
-        self.loss_fn = torch.nn.MSELoss()
-        self.optimizer = optim.Adam(self.dqn_module.parameters())
+        self.loss_fn = torch.nn.MSELoss() # torch.nn.L1Loss()
+        self.optimizer = optim.Adam(self.dqn_module.parameters()) # optim.RMSprop(self.dqn_module.parameters()) #optim.Adam(self.dqn_module.parameters())
       
         
     def __optimize_model(self):
@@ -116,17 +150,39 @@ class DQN(RLModelInterface):
             
             self.optimizer.zero_grad()
             loss.backward()
+            
+            for param in self.dqn_module.parameters():
+                param.grad.data.clamp_(-1, 1)
+            
             self.optimizer.step()
+            
+            self.analysis_dic['losses'].append(loss.item())
             
             if self.sync_counter % self.sync_freq == 0:
                 self.dqn_module_target.load_state_dict(self.dqn_module.state_dict())
                 self.sync_counter = 1
+                # just for debug:
+                self.visualize_training_performance()
             self.sync_counter += 1
 
         
+    def __preprocess_state(self, raw_state):
+        state = raw_state[-1]
+        for i in reversed(range(0, len(raw_state)-1)):
+            state = state - raw_state[i]
+        
+        # state = state / len(raw_state)
+        
+        if self.model_config['verbose']:
+            display([i[0].transpose(0,2).transpose(0,1) for i in raw_state])
+            display([state[0].transpose(0,2).transpose(0,1)])
+            
+        return state
     
     def get_action(self, state):
         self.__optimize_model()
+        
+        state = self.__preprocess_state(state)
         state = state.to(self.device)
         
         sample = random.random()
@@ -137,16 +193,18 @@ class DQN(RLModelInterface):
             with torch.no_grad():
                 return self.dqn_module(state).max(1)[1].view(1, 1).item()
         else:
-            return torch.tensor([[random.randrange(2)]], device = self.device, dtype=torch.long).item()
+            return torch.tensor([[random.randrange(self.action_space.n)]], device = self.device, dtype=torch.long).item()
         
           
 
     def add_feedback_sample(self, state1, action, reward, state2, done):
-        self.replay.append((state1, action, reward, state2, done))
+        state1_ = self.__preprocess_state(state1)
+        state2_ = self.__preprocess_state(state2)
+        self.replay.append((state1_, action, reward, state2_, done))
         
    
-    def get_analysis_dataframe(self):
-        pass    
+    def visualize_training_performance(self):
+        plot_line_chart(y_lst = [self.analysis_dic['losses']], y_names_lst = ['loss'], x_label = 'iterations', y_label = 'loss', title = 'training loss')
      
     
     def save(self, file_name):
@@ -154,4 +212,8 @@ class DQN(RLModelInterface):
     
 
     def load(self, file_name):
-        self.dqn_module.load_state_dict(torch.load(file_name))    
+        self.dqn_module.load_state_dict(torch.load(file_name)) 
+        
+        
+        
+        

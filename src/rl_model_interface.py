@@ -41,8 +41,12 @@ class RLModelInterface(ABC):
         pass 
     
     @abstractmethod
-    def get_analysis_dataframe(self):
+    def visualize_training_performance(self):
         pass
+    
+    
+    def frames_per_state(self):
+        return self.model_config['frames_per_state']
     
     
     def __str__(self):
