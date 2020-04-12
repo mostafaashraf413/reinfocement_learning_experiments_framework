@@ -1,8 +1,8 @@
 {
-    "episodes" : 2000,
-    "load_saved_models" : false,
+    "episodes" : 10000,
+    "load_saved_models" : true,
     "state_image_width" : 82,
     "state_image_height" : 82,
     "env_name" : ["pong_v0", "Pong"],
-    "rl_models" : [["dqn_discrete", "DQN"], ["random_model", "RandomModel"]]
+    "rl_models" : [ ["dqn_discrete", "DQN"], ["random_model", "RandomModel"]]
 }

@@ -1,0 +1,10 @@
+game config:
+
+    {
+        "episodes" : 1000,
+        "load_saved_models" : false,
+        "state_image_width" : 82,
+        "state_image_height" : 82,
+        "env_name" : ["cart_pole_v0", "CartPole"],
+        "rl_models" : [["reinforce_discrete", "REINFORCE"], ["dqn_discrete", "DQN"], ["random_model", "RandomModel"]]
+    }

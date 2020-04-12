@@ -204,6 +204,9 @@ class DQN(RLModelInterface):
     def add_feedback_sample(self, state1, action, reward, state2, done):
         state1_ = self.__preprocess_state(state1)
         state2_ = self.__preprocess_state(state2)
+        
+        # reward = 1 if reward > 0 else (-1 if reward < 0 else 0) 
+        
         self.replay.append((state1_, action, reward, state2_, done))
         
    

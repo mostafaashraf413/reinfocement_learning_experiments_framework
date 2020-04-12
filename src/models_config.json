@@ -3,14 +3,20 @@
         "frames_per_state" : 2,
         "verbose" : false,
         "sync_freq" : 50,
-        "mem_size" : 25000,
+        "mem_size" : 10000,
         "batch_size" : 128,
-        "gamma" : 0.9,
+        "gamma" : 0.999,
         "EPS_START" : 0.99,
         "EPS_END" : 0.1,
         "EPS_DECAY" : 200     
     },
     "random_model" : {
         "frames_per_state" : 1
+    },
+    "reinforce_model_discrete" : {   
+        "frames_per_state" : 2,
+        "verbose" : false,
+        "batch_size" : 64,
+        "gamma" : 0.9    
     }
 }
