@@ -120,7 +120,7 @@ class DQN(RLModelInterface):
         
         self.replay = deque(maxlen= self.mem_size)        
         self.loss_fn = torch.nn.MSELoss() # torch.nn.L1Loss()
-        self.optimizer = optim.Adam(self.dqn_module.parameters()) # optim.RMSprop(self.dqn_module.parameters()) #optim.Adam(self.dqn_module.parameters())
+        self.optimizer = optim.Adam(self.dqn_module.parameters(), lr = 0.0001) # optim.RMSprop(self.dqn_module.parameters()) #optim.Adam(self.dqn_module.parameters())
       
         
     def __optimize_model(self):
@@ -205,7 +205,7 @@ class DQN(RLModelInterface):
         state1_ = self.__preprocess_state(state1)
         state2_ = self.__preprocess_state(state2)
         
-        # reward = 1 if reward > 0 else (-1 if reward < 0 else 0) 
+        reward = 1 if reward > 0 else (-1 if reward < 0 else 0) 
         
         self.replay.append((state1_, action, reward, state2_, done))
         

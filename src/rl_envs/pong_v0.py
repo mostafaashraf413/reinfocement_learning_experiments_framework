@@ -13,7 +13,7 @@ class Pong(RLEnvInterface):
     
     def __init__(self):
         super().__init__('pong_v0')
-        self.env = gym.make('Pong-v0')
+        self.env = gym.make('PongDeterministic-v0') #('PongFrameskip-v4') ##('Pong-v0')
         self.current_observation = self.env.observation_space.sample()
         
 
@@ -29,7 +29,7 @@ class Pong(RLEnvInterface):
     
     def render(self):
         self.env.render(mode = 'human') #(mode = 'rgb_array')
-        return self.current_observation
+        return self.current_observation[30:,:,:]
     
     
     def close_env(self):
@@ -63,8 +63,8 @@ if __name__ == '__main__':
             reward, done = pong.step(action)
             print(reward, ' ', action, ' ', done)
             
-            pong.render()
-            # plt.imshow(pong.render())
-            # plt.show()
+            img = pong.render()
+            plt.imshow(img)
+            plt.show()
         
     pong.close_env()

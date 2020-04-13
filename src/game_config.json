@@ -1,8 +1,8 @@
 {
-    "episodes" : 10000,
-    "load_saved_models" : true,
-    "state_image_width" : 82,
-    "state_image_height" : 82,
-    "env_name" : ["pong_v0", "Pong"],
+    "episodes" : 2000,
+    "load_saved_models" : false,
+    "state_image_width" : 84,
+    "state_image_height" : 84,
+    "env_name" : ["cart_pole_v0", "CartPole"],
     "rl_models" : [ ["dqn_discrete", "DQN"], ["random_model", "RandomModel"]]
 }
